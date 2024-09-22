@@ -80,7 +80,8 @@
             </div>
             <select class="selectpicker" multiple data-live-search="true" name="mlalgos">
                 <option value="LSTM_model">LSTM model</option>
-
+                <option value="KNN_model">KNN model</option>
+                <option value="RandomForest_model">RF Model</option>
             </select>
             <br><br>
             <input type="submit" value="Submit" class="btn btn-success" style="color:white;">
@@ -155,6 +156,7 @@
                                             <tr>
                                                 <td>{{ all_test_evaluations[i][0] }}</td>
                                                 <td>{{ all_test_evaluations[i][1] }}</td>
+                                                <td>{{ all_test_evaluations[i][2] }}</td>
                                             </tr>
                                             {% endfor %}
                                             </tbody>

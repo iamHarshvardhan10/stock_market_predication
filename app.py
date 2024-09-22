@@ -14,9 +14,11 @@ app = Flask(__name__)
 
 def perform_training(stock_name, df, models_list):
     all_colors = {
-                  'random_forests': '#8F0099',
-                  'KNN': '#CCAB43',
-                  'LSTM_model': '#CC7674'}
+                  'LSTM_model': '#CC7674',
+                  'KNN_model': '#74CC76',
+                  'RandomForest_model': '#7674CC',
+                  
+                  }
 
     print(df.head())
     dates, prices, ml_models_outputs, prediction_date, test_price = tm.train_predict_plot(stock_name, df, models_list)
@@ -41,11 +43,12 @@ def perform_training(stock_name, df, models_list):
     for model_output in ml_models_outputs:
         all_prediction_data.append((model_output, (ml_models_outputs[model_output])[1]))
         all_test_evaluations.append((model_output, (ml_models_outputs[model_output])[2]))
-
+    print('this is all test evalutions',all_test_evaluations)
+    print('ML models output', ml_models_outputs)
     return all_prediction_data, all_prediction_data, prediction_date, dates, all_data, all_data, all_test_evaluations
 
-# all_files = utils.read_all_stock_files('forex')
-all_files = utils.read_all_stock_files('nse')
+all_files = utils.read_all_stock_files('forex')
+# all_files = utils.read_all_stock_files('nse')
 # The route() function of the Flask class is a decorator,
 # which tells the application which URL should call
 # the associated function.

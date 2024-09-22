@@ -1,6 +1,7 @@
 from sklearn.svm import SVR
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
+# from sklearn.neighbors import KNeighborsRegressor
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn import tree
 from sklearn import linear_model
@@ -165,3 +166,84 @@ def LSTM_model(dates, prices, test_date, df):
     # print(trainPredict, testPredict[0])
 
     return (trainPredict, (testPredict[0])[0], test_score)
+
+
+
+
+def KNN_model(dates, prices, test_date, df):
+    # Prepare data for KNN
+    df.drop(df.columns.difference(['date', 'open']), axis=1, inplace=True)
+    df = df['open']
+    dataset = df.values
+    dataset = dataset.reshape(-1, 1).astype('float32')
+
+    # Normalize the dataset
+    scaler = MinMaxScaler(feature_range=(0, 1))
+    dataset = scaler.fit_transform(dataset)
+
+    # Split into train and test sets
+    train_size = len(dataset) - 2
+    train, test = dataset[0:train_size, :], dataset[train_size:len(dataset), :]
+
+    # Reshape data into X=t and Y=t+1
+    look_back = 1
+    trainX, trainY = create_dataset(train, look_back)
+    testX, testY = create_dataset(test, look_back)
+
+    # Fit KNN model
+    knn_model = KNeighborsRegressor(n_neighbors=5)
+    knn_model.fit(trainX, trainY)
+
+    # Make predictions
+    trainPredict = knn_model.predict(trainX).reshape(-1, 1)  # Reshape to 2D array
+    testPredict = knn_model.predict(testX).reshape(-1, 1)  # Reshape to 2D array
+
+    # Invert predictions
+    trainPredict = scaler.inverse_transform(trainPredict)
+    testPredict = scaler.inverse_transform(testPredict)
+    testY = scaler.inverse_transform(testY.reshape(-1, 1))
+
+    test_score = mean_squared_error(testY, testPredict)
+
+    return (trainPredict, testPredict[0], test_score)
+
+
+
+# from sklearn.ensemble import RandomForestRegressor
+
+def RandomForest_model(dates, prices, test_date, df):
+    # Prepare data
+    df.drop(df.columns.difference(['date', 'open']), axis=1, inplace=True)
+    df = df['open']
+    dataset = df.values
+    dataset = dataset.reshape(-1, 1).astype('float32')
+
+    # Normalize the dataset
+    scaler = MinMaxScaler(feature_range=(0, 1))
+    dataset = scaler.fit_transform(dataset)
+
+    # Split into train and test sets
+    train_size = len(dataset) - 2
+    train, test = dataset[0:train_size, :], dataset[train_size:len(dataset), :]
+
+    # Reshape data into X=t and Y=t+1
+    look_back = 1
+    trainX, trainY = create_dataset(train, look_back)
+    testX, testY = create_dataset(test, look_back)
+
+    # Fit Random Forest model
+    rf_model = RandomForestRegressor(n_estimators=100)
+    rf_model.fit(trainX, trainY)
+
+    # Make predictions
+    trainPredict = rf_model.predict(trainX).reshape(-1, 1)  # Reshape to 2D array
+    testPredict = rf_model.predict(testX).reshape(-1, 1)  # Reshape to 2D array
+
+    # Invert predictions
+    trainPredict = scaler.inverse_transform(trainPredict)
+    testPredict = scaler.inverse_transform(testPredict)
+    testY = scaler.inverse_transform(testY.reshape(-1, 1))
+
+    test_score = mean_squared_error(testY, testPredict)
+
+    return (trainPredict, testPredict[0], test_score)

@@ -25,13 +25,9 @@ def create_plot(dates, original_prices, ml_models_outputs):
 
 
 def train_predict_plot(file_name, df, ml_model):
-
-    # print (df.head())
-
     ml_models_outputs = {}
-
     dates, prices, test_date, test_price = utils.getData(df)
-    # utils.LSTM_model(dates, prices, test_date, df)
+
     for model in ml_model:
         method_to_call = getattr(utils, model)
         ml_models_outputs[model] = method_to_call(dates, prices, test_date, df)
@@ -39,9 +35,8 @@ def train_predict_plot(file_name, df, ml_model):
     dates = list(df['date'])
     predict_date = dates[-1]
     dates = dates[:-3]
-    # create_plot(dates, prices, ml_models_outputs)
-    return dates, prices, ml_models_outputs, predict_date, test_price
 
+    return dates, prices, ml_models_outputs, predict_date, test_price
 
 
 # print (all_files.keys())
