@@ -11,6 +11,7 @@ from keras.models import Sequential
 from sklearn.model_selection import train_test_split
 from keras.layers import Dense
 from keras.layers import LSTM
+from tensorflow.keras.models import load_model
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error
 import numpy
@@ -138,11 +139,27 @@ def LSTM_model(dates, prices, test_date, df):
     testX = numpy.reshape(testX, (testX.shape[0], 1, testX.shape[1]))
 
     # create and fit the LSTM network
-    model = Sequential()
-    model.add(LSTM(4, input_shape=(1, look_back)))
-    model.add(Dense(1))
-    model.compile(loss='mean_squared_error', optimizer='adam')
-    model.fit(X_train, y_train, epochs=100, batch_size=1, verbose=2)
+    # model = Sequential()
+    # model.add(LSTM(4, input_shape=(1, look_back)))
+    # model.add(Dense(1))
+    # model.compile(loss='mean_squared_error', optimizer='adam')
+    # model.fit(X_train, y_train, epochs=100, batch_size=1, verbose=2)
+
+    model_file = f'models/lstm_model.h5'  # Save as HDF5 file
+
+    # Load the model if it exists
+    if os.path.exists(model_file):
+        model = load_model(model_file)
+    else:
+        # Create and fit the LSTM network
+        model = Sequential()
+        model.add(LSTM(4, input_shape=(1, look_back)))
+        model.add(Dense(1))
+        model.compile(loss='mean_squared_error', optimizer='adam')
+        model.fit(X_train, y_train, epochs=100, batch_size=1, verbose=2)
+
+        # Save the trained model
+        model.save(model_file)
 
     # make predictions
     trainPredict = model.predict(X_train)
