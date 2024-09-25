@@ -14,14 +14,15 @@ app = Flask(__name__)
 
 def perform_training(stock_name, df, models_list):
     all_colors = {
-                  'LSTM_model': '#CC7674',
-                  'KNN_model': '#74CC76',
-                  'RandomForest_model': '#7674CC',
-                  
-                  }
+        'LSTM_model': '#CC7674',
+        'KNN_model': '#74CC76',
+        'RandomForest_model': '#7674CC',
+
+    }
 
     print(df.head())
-    dates, prices, ml_models_outputs, prediction_date, test_price = tm.train_predict_plot(stock_name, df, models_list)
+    dates, prices, ml_models_outputs, prediction_date, test_price = tm.train_predict_plot(
+        stock_name, df, models_list)
     origdates = dates
     if len(dates) > 20:
         dates = dates[-20:]
@@ -41,26 +42,32 @@ def perform_training(stock_name, df, models_list):
     all_test_evaluations = []
     all_prediction_data.append(("Original", test_price))
     for model_output in ml_models_outputs:
-        all_prediction_data.append((model_output, (ml_models_outputs[model_output])[1]))
-        all_test_evaluations.append((model_output, (ml_models_outputs[model_output])[2]))
-    print('this is all test evalutions',all_test_evaluations)
+        all_prediction_data.append(
+            (model_output, (ml_models_outputs[model_output])[1]))
+        all_test_evaluations.append(
+            (model_output, (ml_models_outputs[model_output])[2]))
+    print('this is all test evalutions', all_test_evaluations)
     print('ML models output', ml_models_outputs)
     return all_prediction_data, all_prediction_data, prediction_date, dates, all_data, all_data, all_test_evaluations
+
 
 all_files = utils.read_all_stock_files('forex')
 # all_files = utils.read_all_stock_files('nse')
 # The route() function of the Flask class is a decorator,
 # which tells the application which URL should call
 # the associated function.
+
+
 @app.route('/')
 # ‘/’ URL is bound with hello_world() function.
 def landing_function():
 
     stock_files = list(all_files.keys())
 
-    return render_template('index.html',show_results="false", stocklen=len(stock_files), stock_files=stock_files, len2=len([]),
+    return render_template('index.html', show_results="false", stocklen=len(stock_files), stock_files=stock_files, len2=len([]),
                            all_prediction_data=[],
                            prediction_date="", dates=[], all_data=[], len=len([]))
+
 
 @app.route('/process', methods=['POST'])
 def process():
@@ -70,17 +77,19 @@ def process():
 
     # all_files = utils.read_all_stock_files('forex')
     df = all_files[str(stock_file_name)]
-    
-    all_prediction_data, all_prediction_data, prediction_date, dates, all_data, all_data, all_test_evaluations = perform_training(str(stock_file_name), df, ml_algoritms)
+
+    all_prediction_data, all_prediction_data, prediction_date, dates, all_data, all_data, all_test_evaluations = perform_training(
+        str(stock_file_name), df, ml_algoritms)
     stock_files = list(all_files.keys())
 
-    return render_template('index.html',all_test_evaluations=all_test_evaluations, show_results="true", stocklen=len(stock_files), stock_files=stock_files,
+    return render_template('index.html', all_test_evaluations=all_test_evaluations, show_results="true", stocklen=len(stock_files), stock_files=stock_files,
                            len2=len(all_prediction_data),
                            all_prediction_data=all_prediction_data,
                            prediction_date=prediction_date, dates=dates, all_data=all_data, len=len(all_data))
+
 
 # main driver function
 if __name__ == '__main__':
     # run() method of Flask class runs the application
     # on the local development server.
-    app.run()
+    app.run(debug=True)
